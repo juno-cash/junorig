@@ -1,38 +1,81 @@
-# XMRig
+# Juno XMRig
 
-[![Github All Releases](https://img.shields.io/github/downloads/xmrig/xmrig/total.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub release](https://img.shields.io/github/release/xmrig/xmrig/all.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub Release Date](https://img.shields.io/github/release-date/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub license](https://img.shields.io/github/license/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/blob/master/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/network)
-
-XMRig is a high performance, open source, cross platform RandomX, KawPow, CryptoNight and [GhostRider](https://github.com/xmrig/xmrig/tree/master/src/crypto/ghostrider#readme) unified CPU/GPU miner and [RandomX benchmark](https://xmrig.com/benchmark). Official binaries are available for Windows, Linux, macOS and FreeBSD.
-
-## Mining backends
-- **CPU** (x86/x64/ARMv7/ARMv8)
-- **OpenCL** for AMD GPUs.
-- **CUDA** for NVIDIA GPUs via external [CUDA plugin](https://github.com/xmrig/xmrig-cuda).
+XMRig fork with native Junocash (Zcash-style header + RandomX) mining support.
 
 ## Download
-* **[Binary releases](https://github.com/xmrig/xmrig/releases)**
-* **[Build from source](https://xmrig.com/docs/miner/build)**
 
-## Usage
-The preferred way to configure the miner is the [JSON config file](https://xmrig.com/docs/miner/config) as it is more flexible and human friendly. The [command line interface](https://xmrig.com/docs/miner/command-line-options) does not cover all features, such as mining profiles for different algorithms. Important options can be changed during runtime without miner restart by editing the config file or executing [API](https://xmrig.com/docs/miner/api) calls.
+Pre-built binaries are available from the [Releases](https://github.com/juno-cash/juno-xmrig/releases) page:
 
-* **[Wizard](https://xmrig.com/wizard)** helps you create initial configuration for the miner.
-* **[Workers](http://workers.xmrig.info)** helps manage your miners via HTTP API.
+- **Linux x64**: `xmrig-vX.X.X-linux-x64.zip`
+- **macOS x64**: `xmrig-vX.X.X-macos-x64.zip`
+- **macOS ARM64** (Apple Silicon): `xmrig-vX.X.X-macos-arm64.zip`
 
-## Donations
-* Default donation 1% (1 minute in 100 minutes) can be increased via option `donate-level` or disabled in source code.
-* XMR: `48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD`
+## Features
 
-## Developers
+- **Junocash Pool Mining**: Connect to Junocash stratum pools (e.g., pool.juno.ad)
+- **Solo Mining**: Direct mining via getblocktemplate/submitblock RPC
+- **280-byte Protocol**: Full support for Junocash's 140-byte header (280 hex chars)
+- **32-byte Nonce**: Full 256-bit nonce support (vs standard 4-byte)
+- **rx/0 Compatible**: Uses standard RandomX algorithm (same as Monero)
+
+## Quick Start
+
+### Pool Mining
+```bash
+./xmrig -o pool.juno.ad:3333 -u YOUR_JUNO_ADDRESS -p x --algo rx/0
+```
+
+### Solo Mining
+```bash
+./xmrig --daemon http://127.0.0.1:8232 --coin junocash -u YOUR_JUNO_ADDRESS
+```
+
+## Protocol Differences from Standard XMRig
+
+| Aspect | Standard (Monero) | Junocash |
+|--------|-------------------|----------|
+| Blob Size | 76 bytes (152 hex) | 140 bytes (280 hex) |
+| Nonce Size | 4 bytes | 32 bytes |
+| Nonce Offset | Byte 39 | Bytes 108-139 |
+| Algorithm | rx/0 | rx/0 (same) |
+| Target | 8-byte LE | 8-byte LE (expanded to 32-byte BE) |
+
+## Building
+
+See [BUILDING.md](BUILDING.md) for detailed build instructions for all platforms.
+
+### Quick Build (Linux/macOS)
+
+```bash
+git clone https://github.com/juno-cash/juno-xmrig.git
+cd juno-xmrig
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
+```
+
+## Documentation
+
+- [BUILDING.md](BUILDING.md) - Detailed build instructions
+- [PROTOCOL.md](PROTOCOL.md) - Junocash stratum protocol specification
+- [CHANGELOG.md](CHANGELOG.md) - Version history and changes
+
+## Mining Backends
+
+- **CPU** (x86/x64/ARMv7/ARMv8)
+- **OpenCL** for AMD GPUs
+- **CUDA** for NVIDIA GPUs via external [CUDA plugin](https://github.com/xmrig/xmrig-cuda)
+
+## Based On
+
+- XMRig v6.24.0 (https://github.com/xmrig/xmrig)
+- Licensed under GPLv3
+
+## XMRig Original Developers
+
 * **[xmrig](https://github.com/xmrig)**
 * **[sech1](https://github.com/SChernykh)**
 
-## Contacts
-* support@xmrig.com
-* [reddit](https://www.reddit.com/user/XMRig/)
-* [twitter](https://twitter.com/xmrig_dev)
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.

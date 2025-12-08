@@ -194,6 +194,15 @@ endif()
 
 add_definitions(-DXMRIG_MINER_PROJECT -DXMRIG_JSON_SINGLE_LINE_ARRAY)
 add_definitions(-D__STDC_FORMAT_MACROS -DUNICODE -D_FILE_OFFSET_BITS=64)
+add_definitions(-DSUPPORT_JUNOCASH)
+
+# Junocash support sources
+list(APPEND SOURCES
+    src/junocash/JunocashTemplate.cpp
+)
+list(APPEND HEADERS
+    src/junocash/JunocashTemplate.h
+)
 
 find_package(UV REQUIRED)
 
