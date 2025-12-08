@@ -1,6 +1,6 @@
 # Juno XMRig
 
-XMRig fork with native Junocash (Zcash-style header + RandomX) mining support.
+XMRig fork with native Junocash mining support.
 
 ## Download
 
@@ -22,12 +22,12 @@ Pre-built binaries are available from the [Releases](https://github.com/juno-cas
 
 ### Pool Mining
 ```bash
-./xmrig -o pool.juno.ad:3333 -u YOUR_JUNO_ADDRESS -p x --algo rx/0
+./xmrig -o pool.example.com:3333 -u j1_YOUR_JUNO_ADDRESS -p x --algo rx/juno
 ```
 
 ### Solo Mining
 ```bash
-./xmrig --daemon http://127.0.0.1:8232 --coin junocash -u YOUR_JUNO_ADDRESS
+./xmrig --daemon http://127.0.0.1:8232 --coin junocash -u j1_YOUR_JUNO_ADDRESS
 ```
 
 ## Protocol Differences from Standard XMRig
