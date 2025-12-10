@@ -19,9 +19,9 @@
 #ifndef XMRIG_VERSION_H
 #define XMRIG_VERSION_H
 
-#define APP_ID        "xmrig"
-#define APP_NAME      "XMRig"
-#define APP_DESC      "XMRig miner"
+#define APP_ID        "juno-xmrig"
+#define APP_NAME      "Juno-XMRig"
+#define APP_DESC      "Juno-XMRig miner"
 #define APP_VERSION   "6.24.0"
 #define APP_DOMAIN    "xmrig.com"
 #define APP_SITE      "www.xmrig.com"
@@ -30,7 +30,7 @@
 
 #define APP_VER_MAJOR  6
 #define APP_VER_MINOR  24
-#define APP_VER_PATCH  0
+#define APP_VER_PATCH  2
 
 #ifdef _MSC_VER
 #   if (_MSC_VER >= 1930)
