@@ -81,7 +81,7 @@ public:
     static const char *tag(Id id);
 
 private:
-    Id m_id = INVALID;
+    Id m_id = JUNO;
 };
 
 
