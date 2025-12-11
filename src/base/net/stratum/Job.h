@@ -104,7 +104,9 @@ public:
         memcpy(m_junoHeader, hdr140, sizeof(m_junoHeader));
     }
     inline void setJunocashTarget(const uint8_t *tgt32) { memcpy(m_junoTarget, tgt32, sizeof(m_junoTarget)); }
+    inline void setJunocashSolo(bool solo) { m_isJunocashSolo = solo; }
     inline bool isJunocash() const { return m_isJunocash; }
+    inline bool isJunocashSolo() const { return m_isJunocashSolo; }
     inline const uint8_t* junocashHeader() const { return m_junoHeader; }
     inline const uint8_t* junocashTarget() const { return m_junoTarget; }
 #   endif
@@ -177,6 +179,7 @@ private:
 #   ifdef SUPPORT_JUNOCASH
     // Junocash (Zcash-style header + 32-byte nonce)
     bool m_isJunocash = false;
+    bool m_isJunocashSolo = false;
     uint8_t m_junoHeader[140]{};   // 108 header + 32 zeroed nonce initially
     uint8_t m_junoTarget[32]{};    // big-endian target
 #   endif

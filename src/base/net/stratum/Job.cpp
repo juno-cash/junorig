@@ -279,6 +279,7 @@ void xmrig::Job::copy(const Job &other)
 
 #   ifdef SUPPORT_JUNOCASH
     m_isJunocash = other.m_isJunocash;
+    m_isJunocashSolo = other.m_isJunocashSolo;
     memcpy(m_junoHeader, other.m_junoHeader, sizeof(m_junoHeader));
     memcpy(m_junoTarget, other.m_junoTarget, sizeof(m_junoTarget));
 #   endif
@@ -341,6 +342,7 @@ void xmrig::Job::move(Job &&other)
 
 #   ifdef SUPPORT_JUNOCASH
     m_isJunocash = other.m_isJunocash;
+    m_isJunocashSolo = other.m_isJunocashSolo;
     memcpy(m_junoHeader, other.m_junoHeader, sizeof(m_junoHeader));
     memcpy(m_junoTarget, other.m_junoTarget, sizeof(m_junoTarget));
 #   endif

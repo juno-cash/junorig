@@ -141,7 +141,7 @@ int64_t xmrig::DaemonClient::submit(const JobResult &result)
     }
 #ifdef SUPPORT_JUNOCASH
     if (m_coin.isValid() && m_coin.name() && std::string(m_coin.name())==std::string("Junocash")) {
-        if (!m_junoTpl) {
+        if (!m_junoTpl || !result.junocashNonce() || !result.junocashHash()) {
             return -1;
         }
 
@@ -153,17 +153,15 @@ int64_t xmrig::DaemonClient::submit(const JobResult &result)
         // Header base (108 bytes)
         block.insert(block.end(), m_junoTpl->header_base.begin(), m_junoTpl->header_base.begin() + 108);
 
-        // Nonce (32 bytes): 4-byte miner nonce + 28 zero bytes (solo mining has no extranonce)
-        uint32_t nonce4 = static_cast<uint32_t>(result.nonce);
-        block.insert(block.end(), reinterpret_cast<uint8_t*>(&nonce4), reinterpret_cast<uint8_t*>(&nonce4) + 4);
-        block.insert(block.end(), 28, 0);  // Remaining 28 bytes are zero
+        // Nonce (32 bytes)
+        block.insert(block.end(), result.junocashNonce(), result.junocashNonce() + 32);
 
         // nSolution: varint(32) + 32-byte RandomX hash
         // Size is always 32 bytes, so varint is just 0x20
         block.push_back(0x20);
 
         // RandomX hash (32 bytes) - this is the PoW result
-        block.insert(block.end(), result.result(), result.result() + 32);
+        block.insert(block.end(), result.junocashHash(), result.junocashHash() + 32);
 
         // Transaction count as varint: 1 (coinbase) + number of other transactions
         uint64_t tx_count = 1 + m_junoTpl->txn_hex.size();
@@ -510,13 +508,14 @@ bool xmrig::DaemonClient::parseJob(const rapidjson::Value &params, int *code)
         m_junoTpl.reset(new JunocashTemplate());
         if (!tpl.parse(params)) { return jobError("Invalid Junocash block template"); }
         *m_junoTpl = tpl;
-        job.setAlgorithm(Algorithm::RX_JUNO);
+        job.setAlgorithm(Algorithm::RX_0);
         job.setHeight(tpl.height);
         // Approximate diff from target (placeholder)
         uint64_t diff = 1;
         job.setDiff(diff);
         job.setJunocashHeader(tpl.header_base.data());
         job.setJunocashTarget(tpl.target.data());
+        job.setJunocashSolo(true);
         {
             // Set RandomX seed hash from tpl.seed_hash
             static const char hexmap[] = "0123456789abcdef";
