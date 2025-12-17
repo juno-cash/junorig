@@ -97,6 +97,10 @@ bool xmrig::Job::setZcashJob(const char *version, const char *prevHash, const ch
 {
     // Construct 108-byte Juno Cash header (without nonce)
     // Format: version(4) + prevHash(32) + merkleRoot(32) + blockCommitments(32) + time(4) + bits(4)
+    //
+    // IMPORTANT: The hash fields (prevHash, merkleRoot, blockCommitments) from getblocktemplate
+    // are in DISPLAY order (big-endian). For hashing, they must be converted to INTERNAL order
+    // (little-endian), which means byte-reversing each 32-byte hash.
 
     if (!version || !prevHash || !merkleRoot || !blockCommitments || !bits) {
         return false;
@@ -111,21 +115,51 @@ bool xmrig::Job::setZcashJob(const char *version, const char *prevHash, const ch
     memcpy(m_blob + pos, &ver, 4);
     pos += 4;
 
-    // Parse prevHash (32 bytes)
-    if (strlen(prevHash) != 64 || !Cvt::fromHex(m_blob + pos, 32, prevHash, 64)) {
+    // Parse prevHash (32 bytes) - must reverse from display to internal order
+    if (strlen(prevHash) != 64) {
         return false;
+    }
+    {
+        uint8_t temp[32];
+        if (!Cvt::fromHex(temp, 32, prevHash, 64)) {
+            return false;
+        }
+        // Reverse bytes: display order -> internal order
+        for (int i = 0; i < 32; ++i) {
+            m_blob[pos + i] = temp[31 - i];
+        }
     }
     pos += 32;
 
-    // Parse merkleRoot (32 bytes)
-    if (strlen(merkleRoot) != 64 || !Cvt::fromHex(m_blob + pos, 32, merkleRoot, 64)) {
+    // Parse merkleRoot (32 bytes) - must reverse from display to internal order
+    if (strlen(merkleRoot) != 64) {
         return false;
+    }
+    {
+        uint8_t temp[32];
+        if (!Cvt::fromHex(temp, 32, merkleRoot, 64)) {
+            return false;
+        }
+        // Reverse bytes: display order -> internal order
+        for (int i = 0; i < 32; ++i) {
+            m_blob[pos + i] = temp[31 - i];
+        }
     }
     pos += 32;
 
-    // Parse blockCommitments (32 bytes)
-    if (strlen(blockCommitments) != 64 || !Cvt::fromHex(m_blob + pos, 32, blockCommitments, 64)) {
+    // Parse blockCommitments (32 bytes) - must reverse from display to internal order
+    if (strlen(blockCommitments) != 64) {
         return false;
+    }
+    {
+        uint8_t temp[32];
+        if (!Cvt::fromHex(temp, 32, blockCommitments, 64)) {
+            return false;
+        }
+        // Reverse bytes: display order -> internal order
+        for (int i = 0; i < 32; ++i) {
+            m_blob[pos + i] = temp[31 - i];
+        }
     }
     pos += 32;
 
@@ -145,6 +179,15 @@ bool xmrig::Job::setZcashJob(const char *version, const char *prevHash, const ch
     m_size = 140; // Full size including space for 32-byte nonce
 
     return true;
+}
+
+
+void xmrig::Job::setJunoHeader(const uint8_t *header108)
+{
+    // Directly copy the 108-byte header (without nonce) into m_blob
+    memset(m_blob, 0, sizeof(m_blob));
+    memcpy(m_blob, header108, 108);
+    m_size = 140; // 108 + 32-byte nonce space
 }
 
 
@@ -337,6 +380,7 @@ void xmrig::Job::copy(const Job &other)
 #   endif
 
     m_hasMinerSignature = other.m_hasMinerSignature;
+    m_isSoloMining      = other.m_isSoloMining;
 }
 
 
@@ -393,6 +437,7 @@ void xmrig::Job::move(Job &&other)
 #   endif
 
     m_hasMinerSignature = other.m_hasMinerSignature;
+    m_isSoloMining      = other.m_isSoloMining;
 }
 
 

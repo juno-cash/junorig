@@ -40,6 +40,7 @@
 #ifdef XMRIG_FEATURE_HTTP
 #   include "base/net/stratum/DaemonClient.h"
 #   include "base/net/stratum/SelfSelectClient.h"
+#   include "base/net/stratum/JunoRpcClient.h"
 #endif
 
 
@@ -146,7 +147,7 @@ xmrig::Pool::Pool(const rapidjson::Value &object) :
         m_mode           = MODE_SELF_SELECT;
         m_submitToOrigin = Json::getBool(object, kSubmitToOrigin, m_submitToOrigin);
     }
-    else if (Json::getBool(object, kDaemon)) {
+    else if (Json::getBool(object, kDaemon) || m_url.scheme() == Url::DAEMON) {
         m_mode = MODE_DAEMON;
     }
 }
@@ -239,7 +240,11 @@ xmrig::IClient *xmrig::Pool::createClient(int id, IClientListener *listener) con
     }
 #   ifdef XMRIG_FEATURE_HTTP
     else if (m_mode == MODE_DAEMON) {
-        client = new DaemonClient(id, listener);
+        if (m_algorithm == Algorithm::RX_JUNO) {
+            client = new JunoRpcClient(id, listener);
+        } else {
+            client = new DaemonClient(id, listener);
+        }
     }
     else if (m_mode == MODE_SELF_SELECT) {
         client = new SelfSelectClient(id, Platform::userAgent(), listener, m_submitToOrigin);
@@ -311,7 +316,7 @@ rapidjson::Value xmrig::Pool::toJSON(rapidjson::Document &doc) const
         obj.AddMember(StringRef(kDaemonJobTimeout), m_jobTimeout, allocator);
         obj.AddMember(StringRef(kDaemonZMQPort), m_zmqPort, allocator);
     }
-    else {
+    else if (m_mode == MODE_SELF_SELECT) {
         obj.AddMember(StringRef(kSelfSelect),     m_daemon.url().toJSON(), allocator);
         obj.AddMember(StringRef(kSubmitToOrigin), m_submitToOrigin, allocator);
     }

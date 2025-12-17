@@ -267,8 +267,13 @@ void xmrig::CpuWorker<N>::start()
             }
 
             uint32_t current_job_nonces[N];
+            alignas(8) uint8_t current_solo_nonces[N * 32];
             for (size_t i = 0; i < N; ++i) {
                 current_job_nonces[i] = readUnaligned(m_job.nonce(i));
+                // Save solo nonces BEFORE they get incremented by nextRound()
+                if (m_job.isSoloMining()) {
+                    memcpy(current_solo_nonces + i * 32, m_job.soloNonce(i), 32);
+                }
             }
 
 #           ifdef XMRIG_FEATURE_BENCHMARK
@@ -348,7 +353,12 @@ void xmrig::CpuWorker<N>::start()
                     else
 #                   endif
                     if (value < job.target()) {
-                        JobResults::submit(job, current_job_nonces[i], m_hash + (i * 32), job.hasMinerSignature() ? miner_signature_saved : nullptr);
+                        if (m_job.isSoloMining()) {
+                            // Solo mining: submit with full 256-bit nonce (use saved nonce, not current)
+                            JobResults::submit(JobResult(job, current_solo_nonces + i * 32, m_hash + (i * 32)));
+                        } else {
+                            JobResults::submit(job, current_job_nonces[i], m_hash + (i * 32), job.hasMinerSignature() ? miner_signature_saved : nullptr);
+                        }
                     }
                 }
                 m_count += N;
@@ -369,6 +379,11 @@ void xmrig::CpuWorker<N>::start()
 template<size_t N>
 bool xmrig::CpuWorker<N>::nextRound()
 {
+    // Solo mining uses its own 256-bit nonce management
+    if (m_job.isSoloMining()) {
+        return m_job.nextRoundSolo();
+    }
+
 #   ifdef XMRIG_FEATURE_BENCHMARK
     const uint32_t count = m_benchSize ? 1U : kReserveCount;
 #   else
@@ -515,6 +530,14 @@ void xmrig::CpuWorker<N>::consumeJob()
 #   endif
 
     m_job.add(job, count, Nonce::CPU);
+
+    // Handle solo mining nonce initialization
+    if (job.isSoloMining()) {
+        m_job.setSoloMining(true);
+        m_job.initSoloNonces();
+    } else {
+        m_job.setSoloMining(false);
+    }
 
 #   ifdef XMRIG_ALGO_RANDOMX
     if (m_job.currentJob().algorithm().family() == Algorithm::RANDOM_X) {
