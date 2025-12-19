@@ -56,6 +56,7 @@ make -j$(nproc)
 - [BUILDING.md](BUILDING.md) - Detailed build instructions
 - [PROTOCOL.md](PROTOCOL.md) - Junocash stratum protocol specification
 - [CHANGELOG.md](CHANGELOG.md) - Version history and changes
+- [SOLO_MINING.md](docs/SOLO_MINING.md) - Solo mining guide
 
 ## Mining Backends
 - **CPU** (x86/x64/ARMv7/ARMv8)
