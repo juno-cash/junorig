@@ -1,6 +1,8 @@
-# rx/juno Mining Protocol Specification
+# rx/juno Stratum Protocol Specification
 
-This document describes the Stratum protocol variant used by Junorig for mining Juno Cash (rx/juno algorithm).
+This document describes the Stratum protocol variant used by Junorig for pool mining Juno Cash (rx/juno algorithm).
+
+For solo mining directly against a Juno daemon, see [PROTOCOL_SOLO.md](PROTOCOL_SOLO.md).
 
 ## Overview
 

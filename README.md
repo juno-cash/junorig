@@ -54,9 +54,10 @@ make -j$(nproc)
 
 ## Documentation
 - [BUILDING.md](BUILDING.md) - Detailed build instructions
-- [PROTOCOL.md](PROTOCOL.md) - Junocash stratum protocol specification
+- [PROTOCOL_STRATUM.md](PROTOCOL_STRATUM.md) - Pool mining (Stratum) protocol specification
+- [PROTOCOL_SOLO.md](PROTOCOL_SOLO.md) - Solo mining (daemon RPC) protocol specification
 - [CHANGELOG.md](CHANGELOG.md) - Version history and changes
-- [SOLO_MINING.md](doc/SOLO_MINING.md) - Solo mining guide
+- [SOLO_MINING.md](doc/SOLO_MINING.md) - Solo mining setup guide
 
 ## Mining Backends
 - **CPU** (x86/x64/ARMv7/ARMv8)
