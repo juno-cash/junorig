@@ -81,6 +81,11 @@ void xmrig::BaseTransform::finalize(rapidjson::Document &doc)
     using namespace rapidjson;
     auto &allocator = doc.GetAllocator();
 
+    // Default to rx/juno if no algorithm specified
+    if (!m_algorithm.isValid()) {
+        m_algorithm = Algorithm::RX_JUNO;
+    }
+
     if (m_algorithm.isValid() && doc.HasMember(Pools::kPools)) {
         auto &pools = doc[Pools::kPools];
         for (Value &pool : pools.GetArray()) {

@@ -22,7 +22,7 @@
 #define APP_ID        "junorig"
 #define APP_NAME      "JunoRig"
 #define APP_DESC      "JunoRig miner"
-#define APP_VERSION   "6.24.0-juno.6"
+#define APP_VERSION   "6.24.0-juno.7"
 #define APP_DOMAIN    "xmrig.com"
 #define APP_SITE      "www.xmrig.com"
 #define APP_COPYRIGHT "Copyright (C) 2016-2025 xmrig.com"
